@@ -1,13 +1,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue"
 
-  const time = reactive({
-    displayDays: 0,
-    displayHours: 0,
-    displayMinutes: 0,
-    displaySeconds: 0
-  });
-
   const datePicker = ref('');
 
   const _seconds = 1000;
@@ -18,15 +11,19 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const _days = _hours * 24
 
-  const distance = ref(0);
+  const end = ref(new Date(2024, 5, 30, 0, 4, 10))
 
-  const days = computed(() => Math.floor(distance.value / _days));
+  const now = ref(new Date());
+
+  const distance = computed(() => end.value.getTime() - now.value.getTime());
+
+  const days = computed(() => formatNum(Math.floor(distance.value / _days)));
   
-  const hours = computed(() => Math.floor((distance.value % _days) / _hours));
+  const hours = computed(() => formatNum(Math.floor((distance.value % _days) / _hours)));
 
-  const minutes = computed(() => Math.floor((distance.value % _hours) / _minutes));
+  const minutes = computed(() => formatNum(Math.floor((distance.value % _hours) / _minutes)));
 
-  const seconds = computed(() => Math.floor((distance.value % _minutes) / _seconds));
+  const seconds = computed(() => formatNum(Math.floor((distance.value % _minutes) / _seconds)));
 
   function formatNum(num) {
     return num < 10 ? "0" + num : num;
@@ -34,20 +31,12 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   onMounted(() => {
     const timer = setInterval(() => {
-      const now = new Date();
-      const end = new Date(2024, 4, 10, 10, 50, 10)
-      distance.value = end.getTime() - now.getTime();
+      now.value = new Date();
 
       if(distance.value < 0) {
         clearInterval(timer);
         return;
-      }
-
-      time.displayMinutes = formatNum(minutes.value);
-      time.displaySeconds = formatNum(seconds.value);
-      time.displayHours = formatNum(hours.value);
-      time.displayDays = formatNum(days.value);
-      
+      }      
     }, 1000);
   });
   
@@ -61,7 +50,6 @@ import { ref, reactive, computed, onMounted } from "vue"
   <input
     v-model="datePicker"
     type="date"
-    id="start"
     name="trip-start"
     value="2024-05-07"
     min="2024-05-07"
@@ -71,19 +59,19 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   <div class="grid-timer">
     <div>
-      <span class="timer-count">{{ time.displayDays }}</span>
+      <span class="timer-count">{{ days }}</span>
       <span>days</span>
     </div>
     <div>
-      <span class="timer-count">{{ time.displayHours }}</span>
+      <span class="timer-count">{{ hours }}</span>
       <span>hours</span>
     </div>
     <div>
-      <span class="timer-count">{{ time.displayMinutes }}</span>
+      <span class="timer-count">{{ minutes }}</span>
       <span>minutes</span>
     </div>
     <div>
-      <span class="timer-count">{{ time.displaySeconds }}</span>
+      <span class="timer-count">{{ seconds }}</span>
       <span>seconds</span>
     </div>
   </div>
