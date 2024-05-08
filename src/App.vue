@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue"
+import { ref, reactive, computed, onMounted, onUpdated } from "vue"
 
   const _seconds = 1000;
 
@@ -43,13 +43,6 @@ import { ref, reactive, computed, onMounted } from "vue"
 
 
   onMounted(() => {
-    // const pickedDate = localStorage.getItem('_dt');
-
-    // if( pickedDate ) {
-    //     console.log(pickedDate)
-    // };
-
-
     const timer = setInterval(() => {
       now.value = new Date();
 
@@ -58,6 +51,14 @@ import { ref, reactive, computed, onMounted } from "vue"
         return;
       }      
     }, 1000);
+  });
+
+  onUpdated(() => {
+    const _endDate = localStorage.getItem('_dt');
+
+    if( endDate.value ) {   
+      localStorage.setItem('_dt',endDate.value);
+    };
   });
   
 </script>
@@ -73,8 +74,6 @@ import { ref, reactive, computed, onMounted } from "vue"
     name="trip-start"
     :min="tomorrow"
     max="3000-12-31" />
-
-  <p> The date is {{endDate}}</p>
 
   <div class="grid-timer">
     <div>
