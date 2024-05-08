@@ -41,8 +41,18 @@ import { ref, reactive, computed, onMounted, onUpdated } from "vue"
     return `${year}-${month}-${day}`
   }
 
+  function updateLocalStorage() {
+    localStorage.setItem('_dt',endDate.value);
+  }
+
 
   onMounted(() => {
+    const localStorageDate = localStorage.getItem('_dt');
+
+    if(localStorageDate) {
+      endDate.value = localStorageDate;
+    }
+
     const timer = setInterval(() => {
       now.value = new Date();
 
@@ -53,12 +63,7 @@ import { ref, reactive, computed, onMounted, onUpdated } from "vue"
     }, 1000);
   });
 
-  onUpdated(() => {
-    const _endDate = localStorage.getItem('_dt');
-
-    if( endDate.value ) {   
-      localStorage.setItem('_dt',endDate.value);
-    };
+  onUpdated(() => {   
   });
   
 </script>
@@ -69,7 +74,8 @@ import { ref, reactive, computed, onMounted, onUpdated } from "vue"
   <label for="start">Pick a date</label>
 
   <input
-    v-model="endDate"
+    v-model="endDate" 
+    @change="updateLocalStorage"
     type="date"
     name="trip-start"
     :min="tomorrow"
