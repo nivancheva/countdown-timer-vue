@@ -8,33 +8,45 @@ import { ref, reactive, computed, onMounted } from "vue"
     displaySeconds: 0
   });
 
-  const _seconds = computed(() => 1000)
+  const datePicker = ref('');
 
-  const _minutes = computed(() => _seconds.value * 60)
+  const _seconds = 1000;
 
-  const _hours = computed(() => _minutes.value * 60)
+  const _minutes = _seconds * 60
 
-  const _days = computed(() => _hours.value * 24)
+  const _hours = _minutes * 60
+
+  const _days = _hours * 24
+
+  const distance = ref(0);
+
+  const days = computed(() => Math.floor(distance.value / _days));
+  
+  const hours = computed(() => Math.floor((distance.value % _days) / _hours));
+
+  const minutes = computed(() => Math.floor((distance.value % _hours) / _minutes));
+
+  const seconds = computed(() => Math.floor((distance.value % _minutes) / _seconds));
+
+  function formatNum(num) {
+    return num < 10 ? "0" + num : num;
+  }
 
   onMounted(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      const end = new Date(2024, 4, 9, 10, 50, 10)
-      const distance = end.getTime() - now.getTime();
+      const end = new Date(2024, 4, 10, 10, 50, 10)
+      distance.value = end.getTime() - now.getTime();
 
-      if(distance < 0) {
+      if(distance.value < 0) {
         clearInterval(timer);
         return;
       }
 
-      const days = Math.floor(distance / _days.value);
-      const hours = Math.floor((distance % _days.value) / _hours.value);
-      const minutes = Math.floor((distance % _hours.value) / _minutes.value);
-      const seconds = Math.floor((distance % _minutes.value) / _seconds.value);
-      time.displayMinutes = minutes < 10 ? "0" + minutes : minutes;
-      time.displaySeconds = seconds < 10 ? "0" + seconds : seconds;
-      time.displayHours = hours < 10 ? "0" + hours : hours;
-      time.displayDays = days < 10 ? "0" + days : days;
+      time.displayMinutes = formatNum(minutes.value);
+      time.displaySeconds = formatNum(seconds.value);
+      time.displayHours = formatNum(hours.value);
+      time.displayDays = formatNum(days.value);
       
     }, 1000);
   });
@@ -46,7 +58,16 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   <label for="start">Pick a date</label>
 
-  <input type="date" id="start" name="trip-start" value="2024-05-07" min="2024-05-07" max="3000-12-31" />
+  <input
+    v-model="datePicker"
+    type="date"
+    id="start"
+    name="trip-start"
+    value="2024-05-07"
+    min="2024-05-07"
+    max="3000-12-31" />
+
+    <p> The date is {{datePicker}}</p>
 
   <div class="grid-timer">
     <div>
