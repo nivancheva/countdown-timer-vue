@@ -19,11 +19,13 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const days = computed(() => formatNum(Math.floor(distance.value / _days)));
   
-  const hours = computed(() => formatNum(Math.floor((distance.value % _days) / _hours)));
+  const hours = computed(() => formatNum(Math.floor((distance.value % _days) / _hours - selectedTimezone.value)));
 
   const minutes = computed(() => formatNum(Math.floor((distance.value % _hours) / _minutes)));
 
   const seconds = computed(() => formatNum(Math.floor((distance.value % _minutes) / _seconds)));
+
+  const selectedTimezone = ref(5);
 
   function formatNum(num) {
     return num < 10 ? "0" + num : num;
@@ -45,6 +47,27 @@ import { ref, reactive, computed, onMounted } from "vue"
     localStorage.setItem('_dt',endDate.value);
   }
 
+  function selectTimeZone() {
+    switch (selectedTimezone.value) {
+      case 2:
+        console.log("UTC+2");
+        break;
+      case 5:
+        console.log("UTC+5");
+        break;
+      case 9:
+        console.log("UTC +9");
+        break;
+      case -2:
+        console.log("UTC-2");
+        break;
+      case -9:
+        console.log("UTC-9");
+        break;
+      default:
+        console.log("UTC");
+    }
+  }
 
   onMounted(() => {
     const localStorageDate = localStorage.getItem('_dt');
@@ -80,7 +103,7 @@ import { ref, reactive, computed, onMounted } from "vue"
     max="3000-12-31" />
 
   <label for="timezone">Select Timezone</label>
-  <select name="timezone" id="timezone">
+  <select v-model="selectedTimezone" name="timezone" id="timezone" @click="selectTimeZone">
     <option value=0>Greenwich Mean Time (UTC+0)</option>
     <option value=2>Eastern European Time (UTC+2)</option>
     <option value=5>Maldives Time (UTC+5)</option>
