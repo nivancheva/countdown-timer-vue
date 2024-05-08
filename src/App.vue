@@ -24,11 +24,11 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const endDate = ref(tomorrow.value);
 
-  const distance = computed(() => new Date(endDate.value).getTime() - now.value.getTime());
+  const distance = computed(() => new Date(endDate.value).getTime() - now.value.getTime() - selectedTimezone.value * _hours);
 
   const days = computed(() => formatNum(Math.floor(distance.value / _days)));
   
-  const hours = computed(() => formatNum(Math.floor((distance.value % _days) / _hours - selectedTimezone.value)));
+  const hours = computed(() => formatNum(Math.floor((distance.value % _days) / _hours)));
 
   const minutes = computed(() => formatNum(Math.floor((distance.value % _hours) / _minutes)));
 
@@ -90,7 +90,7 @@ import { ref, reactive, computed, onMounted } from "vue"
     max="3000-12-31" />
 
   <label for="timezone">Select Timezone</label>
-  <select v-model="selectedTimezone" name="timezone" id="timezone" @click="select">
+  <select v-model="selectedTimezone" name="timezone" id="timezone">
     <option v-for="(option, i) in options" :value="option.value" :key="i">
       {{ option.text }}
     </option>
