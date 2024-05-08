@@ -1,5 +1,44 @@
 <script setup>
+import { ref, reactive, computed, onMounted } from "vue"
 
+  const time = reactive({
+    displayDays: 0,
+    displayHours: 0,
+    displayMinutes: 0,
+    displaySeconds: 0
+  });
+
+  const _seconds = computed(() => 1000)
+
+  const _minutes = computed(() => _seconds.value * 60)
+
+  const _hours = computed(() => _minutes.value * 60)
+
+  const _days = computed(() => _hours.value * 24)
+
+  onMounted(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const end = new Date(2024, 4, 9, 10, 50, 10)
+      const distance = end.getTime() - now.getTime();
+
+      if(distance < 0) {
+        clearInterval(timer);
+        return;
+      }
+
+      const days = Math.floor(distance / _days.value);
+      const hours = Math.floor((distance % _days.value) / _hours.value);
+      const minutes = Math.floor((distance % _hours.value) / _minutes.value);
+      const seconds = Math.floor((distance % _minutes.value) / _seconds.value);
+      time.displayMinutes = minutes < 10 ? "0" + minutes : minutes;
+      time.displaySeconds = seconds < 10 ? "0" + seconds : seconds;
+      time.displayHours = hours < 10 ? "0" + hours : hours;
+      time.displayDays = days < 10 ? "0" + days : days;
+      
+    }, 1000);
+  });
+  
 </script>
 
 <template>
@@ -7,24 +46,24 @@
 
   <label for="start">Pick a date</label>
 
-  <input type="date" id="start" name="trip-start" value="2024-05-07" min="2018-01-01" max="3000-12-31" />
+  <input type="date" id="start" name="trip-start" value="2024-05-07" min="2024-05-07" max="3000-12-31" />
 
   <div class="grid-timer">
     <div>
-      <p>0 :</p>
-      <p>days</p>
+      <span class="timer-count">{{ time.displayDays }}</span>
+      <span>days</span>
     </div>
     <div>
-      <p>0 :</p>
-      <p>hours</p>
+      <span class="timer-count">{{ time.displayHours }}</span>
+      <span>hours</span>
     </div>
     <div>
-      <p>0 :</p>
-      <p>minutes</p>
+      <span class="timer-count">{{ time.displayMinutes }}</span>
+      <span>minutes</span>
     </div>
     <div>
-      <p>0</p>
-      <p>seconds</p>
+      <span class="timer-count">{{ time.displaySeconds }}</span>
+      <span>seconds</span>
     </div>
   </div>
 
@@ -35,8 +74,20 @@
 @media (min-width:776px) {
   .grid-timer {
     grid-template-columns: repeat(4, 1fr);
+    margin-top: 3rem
   }
 }
+
+span {
+  display: block;
+  font-size: .875rem;
+  text-transform: uppercase;
+}
+
+.timer-count {
+  font-size: 2.5rem;
+}
+
 .grid-timer {
   display: grid;
 }
