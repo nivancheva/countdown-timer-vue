@@ -71,12 +71,23 @@ import { ref, reactive, computed, onMounted } from "vue"
   <label for="start">Pick a date</label>
 
   <input
-    v-model="endDate" 
+    v-model="endDate"
+    id="start" 
     @change="updateLocalStorage"
     type="date"
     name="trip-start"
     :min="tomorrow"
     max="3000-12-31" />
+
+  <label for="timezone">Select Timezone</label>
+  <select name="timezone" id="timezone">
+    <option value=0>Greenwich Mean Time (UTC+0)</option>
+    <option value=2>Eastern European Time (UTC+2)</option>
+    <option value=5>Maldives Time (UTC+5)</option>
+    <option value=9>India Time Zone (UTC+9)</option>
+    <option value=-2>	Brasília Summer Time (UTC-2)</option>
+    <option value=-9>Alaska Standard Time (UTC-9)</option>
+  </select>
 
   <div class="grid-timer">
     <div>
@@ -130,12 +141,17 @@ label {
 }
 
 input,
-label {
+label{
   margin: 0.4rem 0;
 }
 
-input {
+input,
+select {
   font-size: 1.2rem;
+}
+
+select {
+  padding: .25rem;
 }
 
 </style>
