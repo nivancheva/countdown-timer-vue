@@ -11,7 +11,9 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const now = ref(new Date());
 
-  const endDate = ref('2024-07-20');
+  const tomorrow = computed(() => formatTomorrow(now.value));
+
+  const endDate = ref(tomorrow.value);
 
   const distance = computed(() => new Date(endDate.value).getTime() - now.value.getTime());
 
@@ -27,7 +29,27 @@ import { ref, reactive, computed, onMounted } from "vue"
     return num < 10 ? "0" + num : num;
   }
 
+  function formatTomorrow (date) {  
+    if (!(date instanceof Date)) {
+      throw new Error('Invalid "date" argument. You must pass a date instance')
+    }
+
+    const year = date.getFullYear()
+    const month = formatNum(String(date.getMonth() + 1))
+    const day = formatNum(String(date.getDate() + 1))
+
+    return `${year}-${month}-${day}`
+  }
+
+
   onMounted(() => {
+    // const pickedDate = localStorage.getItem('_dt');
+
+    // if( pickedDate ) {
+    //     console.log(pickedDate)
+    // };
+
+
     const timer = setInterval(() => {
       now.value = new Date();
 
@@ -49,6 +71,7 @@ import { ref, reactive, computed, onMounted } from "vue"
     v-model="endDate"
     type="date"
     name="trip-start"
+    :min="tomorrow"
     max="3000-12-31" />
 
   <p> The date is {{endDate}}</p>
