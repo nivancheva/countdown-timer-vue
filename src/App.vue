@@ -1,6 +1,15 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue"
 
+  const options = ref([
+  { text: 'Greenwich Mean Time (UTC+0)', value: '0' },
+  { text: 'Eastern European Time (UTC+2)', value: '2' },
+  { text: 'Maldives Time (UTC+5)', value: '5' },
+  { text: 'India Time Zone (UTC+9)', value: '9' },
+  { text: 'Brasília Summer Time (UTC-2)', value: '-2' },
+  { text: 'Alaska Standard Time (UTC-9)', value: '-9' },
+])
+
   const _seconds = 1000;
 
   const _minutes = _seconds * 60
@@ -25,7 +34,7 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const seconds = computed(() => formatNum(Math.floor((distance.value % _minutes) / _seconds)));
 
-  const selectedTimezone = ref(5);
+  const selectedTimezone = ref(0);
 
   function formatNum(num) {
     return num < 10 ? "0" + num : num;
@@ -45,28 +54,6 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   function updateLocalStorage() {
     localStorage.setItem('_dt',endDate.value);
-  }
-
-  function selectTimeZone() {
-    switch (selectedTimezone.value) {
-      case 2:
-        console.log("UTC+2");
-        break;
-      case 5:
-        console.log("UTC+5");
-        break;
-      case 9:
-        console.log("UTC +9");
-        break;
-      case -2:
-        console.log("UTC-2");
-        break;
-      case -9:
-        console.log("UTC-9");
-        break;
-      default:
-        console.log("UTC");
-    }
   }
 
   onMounted(() => {
@@ -103,13 +90,11 @@ import { ref, reactive, computed, onMounted } from "vue"
     max="3000-12-31" />
 
   <label for="timezone">Select Timezone</label>
-  <select v-model="selectedTimezone" name="timezone" id="timezone" @click="selectTimeZone">
-    <option value=0>Greenwich Mean Time (UTC+0)</option>
-    <option value=2>Eastern European Time (UTC+2)</option>
-    <option value=5>Maldives Time (UTC+5)</option>
-    <option value=9>India Time Zone (UTC+9)</option>
-    <option value=-2>	Brasília Summer Time (UTC-2)</option>
-    <option value=-9>Alaska Standard Time (UTC-9)</option>
+  <select v-model="selectedTimezone" name="timezone" id="timezone" @click="select">
+    <option v-for="(option, i) in options" :value="option.value" :key="i">
+      {{ option.text }}
+    </option>
+
   </select>
 
   <div class="grid-timer">
