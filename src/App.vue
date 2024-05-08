@@ -1,8 +1,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue"
 
-  const datePicker = ref('');
-
   const _seconds = 1000;
 
   const _minutes = _seconds * 60
@@ -11,11 +9,11 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const _days = _hours * 24
 
-  const end = ref(new Date(2024, 5, 30, 0, 4, 10))
-
   const now = ref(new Date());
 
-  const distance = computed(() => end.value.getTime() - now.value.getTime());
+  const endDate = ref('2024-07-20');
+
+  const distance = computed(() => new Date(endDate.value).getTime() - now.value.getTime());
 
   const days = computed(() => formatNum(Math.floor(distance.value / _days)));
   
@@ -48,14 +46,12 @@ import { ref, reactive, computed, onMounted } from "vue"
   <label for="start">Pick a date</label>
 
   <input
-    v-model="datePicker"
+    v-model="endDate"
     type="date"
     name="trip-start"
-    value="2024-05-07"
-    min="2024-05-07"
     max="3000-12-31" />
 
-    <p> The date is {{datePicker}}</p>
+  <p> The date is {{endDate}}</p>
 
   <div class="grid-timer">
     <div>
