@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onMounted, onUpdated } from "vue"
+import { ref, reactive, computed, onMounted } from "vue"
 
   const _seconds = 1000;
 
@@ -61,9 +61,6 @@ import { ref, reactive, computed, onMounted, onUpdated } from "vue"
         return;
       }      
     }, 1000);
-  });
-
-  onUpdated(() => {   
   });
   
 </script>
