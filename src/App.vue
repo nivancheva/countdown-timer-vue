@@ -2,12 +2,12 @@
 import { ref, reactive, computed, onMounted } from "vue"
 
   const options = ref([
+  { text: 'Alaska Standard Time (UTC-9)', value: '-9' },
+  { text: 'Brasília Summer Time (UTC-2)', value: '-2' },
   { text: 'Greenwich Mean Time (UTC+0)', value: '0' },
   { text: 'Eastern European Time (UTC+2)', value: '2' },
   { text: 'Maldives Time (UTC+5)', value: '5' },
   { text: 'India Time Zone (UTC+9)', value: '9' },
-  { text: 'Brasília Summer Time (UTC-2)', value: '-2' },
-  { text: 'Alaska Standard Time (UTC-9)', value: '-9' },
 ])
 
   const _seconds = 1000;
