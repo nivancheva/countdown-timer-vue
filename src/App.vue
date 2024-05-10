@@ -34,7 +34,9 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const now = ref(new Date());
 
-  const distance = computed(() => end.value - now.value);
+  const tzNow = computed(() => now.value - selectedTimezone.value * _hours);
+
+  const distance = computed(() => end.value - tzNow.value);
 
   const selectedTimezone = ref(0);
 
@@ -55,19 +57,30 @@ import { ref, reactive, computed, onMounted } from "vue"
   }
 
   function updateLocalStorage() {
-    localStorage.setItem('_dt',endDate.value);
+    const localStorageItem = {
+      endDate: endDate.value,
+      tz: selectedTimezone.value
+    };
+
+    localStorage.setItem('_dt', JSON.stringify(localStorageItem));
   }
 
   onMounted(() => {
-    const localStorageDate = localStorage.getItem('_dt');
+    let localStorageItem = JSON.parse(localStorage.getItem("_dt"));
 
-    if(localStorageDate) {
-      endDate.value = localStorageDate;
+    if(localStorageItem) {
+      if(localStorageItem.endDate) {
+        endDate.value = localStorageItem.endDate
+      }
+      if(localStorageItem.tz) {
+        selectedTimezone.value = localStorageItem.tz
+      }      
     }
 
     const timer = setInterval(() => {
-      now.value = new Date(new Date().getTime() + selectedTimezone.value * _hours);
+      now.value = new Date();
     }, 1000);
+
   });
   
 </script>
@@ -86,7 +99,10 @@ import { ref, reactive, computed, onMounted } from "vue"
     max="3000-12-31" />
 
   <label for="timezone">Select Timezone</label>
-  <select v-model="selectedTimezone" name="timezone" id="timezone">
+  <select
+    v-model="selectedTimezone"
+    @change="updateLocalStorage"
+    name="timezone" id="timezone">
     <option v-for="(option, i) in options" :value="option.value" :key="i">
       {{ option.text }}
     </option>
@@ -111,6 +127,8 @@ import { ref, reactive, computed, onMounted } from "vue"
       <span>seconds</span>
     </div>
   </div>
+
+  <p v-if="distance < 0" class="error">Please select a future date</p>
 
 </template>
 
@@ -156,6 +174,12 @@ select {
 
 select {
   padding: .25rem;
+}
+
+.error {
+  text-transform: uppercase;
+  color: red;
+  font-size: 1.5rem;
 }
 
 </style>
