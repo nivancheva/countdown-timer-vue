@@ -18,14 +18,6 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const _days = _hours * 24
 
-  const now = ref(new Date());
-
-  const tomorrow = computed(() => formatTomorrow(now.value));
-
-  const endDate = ref(tomorrow.value);
-
-  const distance = computed(() => new Date(endDate.value).getTime() - now.value.getTime() - selectedTimezone.value * _hours);
-
   const days = computed(() => formatNum(Math.floor(distance.value / _days)));
   
   const hours = computed(() => formatNum(Math.floor((distance.value % _days) / _hours)));
@@ -34,20 +26,30 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   const seconds = computed(() => formatNum(Math.floor((distance.value % _minutes) / _seconds)));
 
+  const tomorrow = new Date(new Date().getTime() + _days);
+
+  const endDate = ref(formatDay(tomorrow));
+  
+  const end = computed(() => new Date(endDate.value));
+
+  const now = ref(new Date());
+
+  const distance = computed(() => end.value - now.value);
+
   const selectedTimezone = ref(0);
 
   function formatNum(num) {
     return num < 10 ? "0" + num : num;
   }
 
-  function formatTomorrow (date) {  
+  function formatDay (date) {  
     if (!(date instanceof Date)) {
       throw new Error('Invalid "date" argument. You must pass a date instance')
     }
 
     const year = date.getFullYear()
     const month = formatNum(String(date.getMonth() + 1))
-    const day = formatNum(String(date.getDate() + 1))
+    const day = formatNum(String(date.getDate()))
 
     return `${year}-${month}-${day}`
   }
@@ -64,12 +66,7 @@ import { ref, reactive, computed, onMounted } from "vue"
     }
 
     const timer = setInterval(() => {
-      now.value = new Date();
-
-      if(distance.value < 0) {
-        clearInterval(timer);
-        return;
-      }      
+      now.value = new Date(new Date().getTime() + selectedTimezone.value * _hours);
     }, 1000);
   });
   
@@ -79,14 +76,13 @@ import { ref, reactive, computed, onMounted } from "vue"
   <h1>Countdown Timer</h1>
 
   <label for="start">Pick a date</label>
-
   <input
     v-model="endDate"
     id="start" 
     @change="updateLocalStorage"
     type="date"
     name="trip-start"
-    :min="tomorrow"
+    :min="formatDay(tomorrow)"
     max="3000-12-31" />
 
   <label for="timezone">Select Timezone</label>
@@ -97,7 +93,7 @@ import { ref, reactive, computed, onMounted } from "vue"
 
   </select>
 
-  <div class="grid-timer">
+  <div v-if="distance > 0" class="grid-timer">
     <div>
       <span class="timer-count">{{ days }}</span>
       <span>days</span>
